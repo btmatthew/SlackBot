@@ -1,7 +1,9 @@
+import com.sun.net.httpserver.HttpServer;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * This sample code is creating a Slack session and is connecting to slack. To get some more details on
@@ -20,5 +22,12 @@ public class SlackDirectConnection
         slackMessanger.registeringAListener(session);
         slackMessanger.registeringLoginListener(session);
         slackMessanger.registeringChannelCreatedListener(session);
+
+        HttpServer server = HttpServer.create(new InetSocketAddress(7777), 0);
+        server.createContext("/adduser", new HTTPServer(session));
+        server.setExecutor(null); // creates a default executor
+        server.start();
+
+
     }
 }
