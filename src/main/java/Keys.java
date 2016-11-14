@@ -3,6 +3,7 @@
  */
 public class Keys {
     String slackKey = "";
+    String slackAdminKey = "";
     String databaseURL = "";
     String databaseUser = "";
     String databasePass = "";
