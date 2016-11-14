@@ -19,9 +19,9 @@ public class SlackDirectConnection
 
 
         ListeningToMessageEvents slackMessanger = new ListeningToMessageEvents();
-        //slackMessanger.registeringAListener(session);
-        //slackMessanger.registeringLoginListener(session);
-        //slackMessanger.registeringChannelCreatedListener(session);
+        slackMessanger.registeringAListener(session);
+        slackMessanger.registeringLoginListener(session);
+        slackMessanger.registeringChannelCreatedListener(session);
 
         HttpServer server = HttpServer.create(new InetSocketAddress(7777), 0);
         server.createContext("/adduser", new HTTPServer());
