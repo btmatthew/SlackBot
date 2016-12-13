@@ -11,8 +11,7 @@ import java.net.InetSocketAddress;
  */
 public class SlackDirectConnection
 {
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException{
         Keys keys = new Keys();
         SlackSession session = SlackSessionFactory.createWebSocketSlackSession(keys.slackKey);
         session.connect();
@@ -23,8 +22,8 @@ public class SlackDirectConnection
         slackMessanger.registeringLoginListener(session);
         slackMessanger.registeringChannelCreatedListener(session);
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(7777), 0);
-        server.createContext("/adduser", new HTTPServer());
+        HttpServer server = HttpServer.create(new InetSocketAddress(7000), 0);
+        server.createContext("/addusers", new HTTPServer());
         server.setExecutor(null); // creates a default executor
         server.start();
 

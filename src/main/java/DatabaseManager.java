@@ -176,6 +176,69 @@ public class DatabaseManager{
 
     }
 
+    public ArrayList<SlackMessage> getUserGroup(){
+        ArrayList<SlackMessage> slackMessageArrayList = new ArrayList<>();
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+                String query = "SELECT " +
+                        "su.slackUserId,"+
+                        "sc.slackChannelId,"+
+                        "g.name as 'group name'," +
+                        "p.projectId FROM `user` AS u " +
+                        "INNER JOIN `slackUser` AS su On `su`.`userId` = `u`.`userId`"+
+                        "INNER JOIN `userGroup` AS ug ON `ug`.`userId` = `u`.`userId`" +
+                        "INNER JOIN `group` AS g ON `g`.`groupId` = `ug`.`groupId`" +
+                        "INNER JOIN `slackChannel` AS sc ON `sc`.`groupId` = `g`.`groupId`"+
+                        "INNER JOIN `project` AS p ON `p`.`projectId` = `g`.`projectId`" +
+                        "WHERE p.projectId = "+"\"bestFood2016\"";
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()) {
+                    SlackMessage slackMessage = new SlackMessage();
+                    slackMessage.setUserID(rs.getString("slackUserId"));
+                    slackMessage.setChannelID(rs.getString("slackChannelId"));
+                    slackMessageArrayList.add(slackMessage);
+                }
+                rs.close();
+                stmt.close();
+                conn.close();
 
+            }
+
+            }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return slackMessageArrayList;
+    }
+    public ArrayList<SlackMessage> getUsersToInvite() {
+        ArrayList<SlackMessage> slackMessageArrayList = new ArrayList<>();
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+
+                String query = "SELECT `user`.`userId`,`user`.`firstName`,`user`.`email`,`project`.`projectId`" +
+                        "FROM `user`" +
+                        "INNER JOIN `userGroup` ON `user`.`userId` = `userGroup`.`userId`" +
+                        "INNER JOIN `group` ON `userGroup`.`groupId` = `group`.`groupId`" +
+                        "INNER JOIN `project` ON `group`.`projectId` = `project`.`projectId`"+
+                        "WHERE project.projectId = "+"\"bestFood2016\"";
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()) {
+                    SlackMessage slackMessage = new SlackMessage();
+                    slackMessage.setEmail(rs.getString("email"));
+                    slackMessage.setFirstName(rs.getString("firstName"));
+                    slackMessageArrayList.add(slackMessage);
+                }
+                rs.close();
+                stmt.close();
+                conn.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return slackMessageArrayList;
+    }
 
 }

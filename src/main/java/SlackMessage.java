@@ -16,9 +16,18 @@ public class SlackMessage {
     private String userID;
     private String slackSizeID;
     private ArrayList<String> replaces = new ArrayList<>();
-
+    private String firstName;
     public SlackMessage() {
 
+    }
+
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public ArrayList<String> getReplaces() {
