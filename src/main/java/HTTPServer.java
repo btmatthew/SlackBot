@@ -14,6 +14,7 @@ import java.util.ArrayList;
  */
 public class HTTPServer implements HttpHandler {
 
+
     /***
      * Method used for purpose of receiving HTTP requests to add users to Slack and to add users to Slack groups
      * @param t used to handle http requests
@@ -21,7 +22,8 @@ public class HTTPServer implements HttpHandler {
      */
     public void handle(HttpExchange t) throws IOException {
         Keys keys = new Keys();
-        SlackSession session = SlackSessionFactory.createWebSocketSlackSession(keys.slackAdminKey);
+        System.out.println("Creating admin Session");
+        SlackSession session = SlackSessionFactory.createWebSocketSlackSession(keys.getSlackAdminKey());
         session.connect();
 
         String response = t.getRequestURI().getPath();
@@ -33,9 +35,9 @@ public class HTTPServer implements HttpHandler {
         if(response.contains("group")){
             addUsersToGroup(session, db );
         }else if(response.contains("invite")){
-            addUsersToSlack(session,db);
+            inviteUsersToSlack(session,db);
         }
-        session.disconnect();
+
     }
 
     /***
@@ -43,22 +45,28 @@ public class HTTPServer implements HttpHandler {
      * @param session used for communicating with slack API
      * @param db used to query database
      */
-    private void addUsersToSlack(SlackSession session, DatabaseManager db){
+    private void inviteUsersToSlack(SlackSession session, DatabaseManager db) throws IOException {
         ArrayList<SlackMessage> slackMessageArrayList = db.getUsersToInvite();
         ArrayList<SlackUser> slackUserArrayList = new ArrayList<>(session.getUsers());
         for(SlackMessage slackMessage : slackMessageArrayList){
 
+
             boolean userFound = false;
             for(SlackUser slackUser : slackUserArrayList){
+                System.out.println("user to invite "+slackMessage.getEmail());
+                System.out.println(slackUser.getUserMail());
                 if(slackMessage.getEmail().equals(slackUser.getUserMail())){
+                    System.out.println("user found " + slackMessage.getEmail());
                     userFound=true;
                     break;
                 }
             }
             if(!userFound){
                 session.inviteUser(slackMessage.getEmail(),slackMessage.getFirstName(),true);
+                System.out.println("Following user was invited : " + slackMessage.getFirstName() + " with email address "+slackMessage.getEmail());
             }
         }
+        session.disconnect();
     }
 
     /***
@@ -66,7 +74,7 @@ public class HTTPServer implements HttpHandler {
      * @param session used for communicating with slack API
      * @param db used to query database
      */
-    private void addUsersToGroup(SlackSession session, DatabaseManager db){
+    private void addUsersToGroup(SlackSession session, DatabaseManager db) throws IOException {
         ArrayList<SlackMessage> slackMessageArrayList = db.getUserGroup();
         session.refetchUsers();
         ArrayList<SlackChannel> slackChannelArrayList = new ArrayList<>(session.getChannels());
@@ -90,6 +98,7 @@ public class HTTPServer implements HttpHandler {
                 session.inviteToChannel(slackChannelTemp,slackUserTemp);
             }
         }
+        session.disconnect();
     }
 
 

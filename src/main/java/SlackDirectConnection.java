@@ -13,18 +13,16 @@ public class SlackDirectConnection
 {
     public static void main(String[] args) throws IOException{
         Keys keys = new Keys();
-        SlackSession session = SlackSessionFactory.createWebSocketSlackSession(keys.slackKey);
+        SlackSession session = SlackSessionFactory.createWebSocketSlackSession(keys.getSlackKey());
         session.connect();
-
 
         ListeningToMessageEvents slackMessanger = new ListeningToMessageEvents();
         slackMessanger.registeringAListener(session);
         slackMessanger.registeringLoginListener(session);
         slackMessanger.registeringChannelCreatedListener(session);
-
         HttpServer server = HttpServer.create(new InetSocketAddress(7000), 0);
         server.createContext("/addusers", new HTTPServer());
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(null);
         server.start();
 
 

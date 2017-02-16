@@ -126,9 +126,8 @@ public class ListeningToMessageEvents {
         SlackChannelJoinedListener slackChannelJoinedListener = new SlackChannelJoinedListener() {
             @Override
             public void onEvent(SlackChannelJoined slackChannelJoined, SlackSession slackSession) {
-                System.out.println(slackSession.getTeam().getId());
                 SlackMessage slackMessage = new SlackMessage();
-                slackMessage.setSlackSizeID(slackSession.getTeam().getId());
+                slackMessage.setSlackSideID(slackSession.getTeam().getId());
                 slackMessage.setChannelID(slackChannelJoined.getSlackChannel().getId());
                 slackMessage.setChannelName(slackChannelJoined.getSlackChannel().getName());
 

@@ -1,0 +1,8 @@
+{
+  "slackKey": "",
+  "slackAdminKey": "",
+  "databaseURL": "",
+  "databaseUser": "",
+  "databasePass":"",
+  "projectName":""
+}

@@ -8,10 +8,36 @@ import java.util.TimeZone;
  */
 public class DatabaseManager{
     //  Database credentials
-    Keys keys = new Keys();
-    private final String DB_URL = keys.databaseURL;
-    private final String USER = keys.databaseUser;
-    private final String PASS = keys.databasePass;
+    private Keys keys;
+    private Connection mConnection;
+    private final String DB_URL;
+    private final String USER;
+    private final String PASS;
+
+    public DatabaseManager() {
+        keys = new Keys();
+        getConnection();
+        this.DB_URL = keys.getDatabaseURL();
+        this.USER = keys.getDatabaseUser();
+        this.PASS = keys.getDatabasePass();
+    }
+
+    private Connection getConnection() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            if (mConnection == null || !mConnection.isValid(1)) {
+                mConnection = (Connection) DriverManager.getConnection(DB_URL, USER, PASS);
+            }
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            mConnection = null;
+        }
+
+
+        return mConnection;
+    }
 
     /**
      * Used for purpose of saving users message in a database,
@@ -20,7 +46,7 @@ public class DatabaseManager{
      */
     public void saveMessageInDatabase(SlackMessage message){
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection conn = getConnection();
 
             try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
 
@@ -75,7 +101,7 @@ public class DatabaseManager{
      */
     public void saveStatusInDatabase(SlackMessage message){
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection conn = getConnection();
             try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
                 String query = "INSERT INTO slackUserStatusLog (slackUserId,email,status,time) " +
                         "VALUES (?,?,?,?)";
@@ -102,7 +128,7 @@ public class DatabaseManager{
      */
     public void newChannelCreated(SlackMessage message) {
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection conn = getConnection();
             try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
                 String query = "SELECT * FROM slackChannel WHERE slackChannelId = " + "\"" +message.getChannelID()+ "\"";
                 ResultSet rs = stmt.executeQuery(query);
@@ -114,7 +140,7 @@ public class DatabaseManager{
                             "VALUES (?,?,?)";
                     PreparedStatement preparedStatement = conn.prepareStatement(query);
                     preparedStatement.setString(1, message.getChannelID());
-                    preparedStatement.setString(2, message.getSlackSizeID());
+                    preparedStatement.setString(2, message.getSlackSideID());
                     preparedStatement.setString(3,message.getChannelName());
                     preparedStatement.executeUpdate();
                     preparedStatement.close();
@@ -130,7 +156,7 @@ public class DatabaseManager{
     public ArrayList<String> selectAllSlackUsersFromDatabase(){
         ArrayList<String> slackMessages = new ArrayList<>();
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection conn = getConnection();
             try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
                 String query = "SELECT * FROM slackUser";
                 ResultSet rs = stmt.executeQuery(query);
@@ -152,7 +178,7 @@ public class DatabaseManager{
     public void findUserID(String email,String slackID,String slackNickName){
         String userID=null;
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection conn = getConnection();
             try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
                 String query = "SELECT * FROM `user` WHERE `email` =" + "\"" +email+ "\"";
                 ResultSet rs = stmt.executeQuery(query);
@@ -179,7 +205,7 @@ public class DatabaseManager{
     public ArrayList<SlackMessage> getUserGroup(){
         ArrayList<SlackMessage> slackMessageArrayList = new ArrayList<>();
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection conn = getConnection();
             try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
                 String query = "SELECT " +
                         "su.slackUserId,"+
@@ -215,15 +241,16 @@ public class DatabaseManager{
     public ArrayList<SlackMessage> getUsersToInvite() {
         ArrayList<SlackMessage> slackMessageArrayList = new ArrayList<>();
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection conn = getConnection();
             try (Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-
+                String projectName = keys.getProjectName();
                 String query = "SELECT `user`.`userId`,`user`.`firstName`,`user`.`email`,`project`.`projectId`" +
                         "FROM `user`" +
                         "INNER JOIN `userGroup` ON `user`.`userId` = `userGroup`.`userId`" +
                         "INNER JOIN `group` ON `userGroup`.`groupId` = `group`.`groupId`" +
                         "INNER JOIN `project` ON `group`.`projectId` = `project`.`projectId`"+
-                        "WHERE project.projectId = "+"\"bestFood2016\"";
+                        "WHERE project.projectId = "+ "\"" + projectName + "\";";
+                System.out.println(query);
                 ResultSet rs = stmt.executeQuery(query);
                 while(rs.next()) {
                     SlackMessage slackMessage = new SlackMessage();

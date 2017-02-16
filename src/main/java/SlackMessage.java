@@ -14,7 +14,7 @@ public class SlackMessage {
     private String channelID;
     private String email;
     private String userID;
-    private String slackSizeID;
+    private String slackSideID;
     private ArrayList<String> replaces = new ArrayList<>();
     private String firstName;
     public SlackMessage() {
@@ -105,11 +105,11 @@ public class SlackMessage {
         this.userID = userID;
     }
 
-    public String getSlackSizeID() {
-        return slackSizeID;
+    public String getSlackSideID() {
+        return slackSideID;
     }
 
-    public void setSlackSizeID(String slackSizeID) {
-        this.slackSizeID = slackSizeID;
+    public void setSlackSideID(String slackSideID) {
+        this.slackSideID = slackSideID;
     }
 }
