@@ -1,4 +1,10 @@
-import org.json.JSONObject;
+
+
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +29,7 @@ public class Keys {
     private String databasePass = "";
     private String projectName = "";
 
-    Keys(){
+    Keys() throws ParseException {
         loadConfig();
     }
 
@@ -51,9 +57,8 @@ public class Keys {
         return projectName;
     }
 
-    private void loadConfig(){
-    ClassLoader classLoader = getClass().getClassLoader();
-    File file = new File(classLoader.getResource("keys.json").getFile());
+    private void loadConfig() throws ParseException {
+    File file = new File("keys.json");
     String str = "";
     try (Scanner scanner = new Scanner(file)) {
 
@@ -65,13 +70,15 @@ public class Keys {
     } catch (IOException e) {
         e.printStackTrace();
     }
-        JSONObject obj = new JSONObject(str);
-        slackAdminKey = obj.get(slackAdminKeyID).toString();
-        slackKey = obj.get(slackKeyID).toString();
-        databaseURL = obj.get(databaseURLID).toString();
-        databaseUser = obj.get(databaseUserID).toString();
-        databasePass = obj.get(databasePassID).toString();
-        projectName = obj.get(projectNameID).toString();
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(str);
+        JSONObject jsonObject = (JSONObject) obj;
+        slackAdminKey = jsonObject.get(slackAdminKeyID).toString();
+        slackKey = jsonObject.get(slackKeyID).toString();
+        databaseURL = jsonObject.get(databaseURLID).toString();
+        databaseUser = jsonObject.get(databaseUserID).toString();
+        databasePass = jsonObject.get(databasePassID).toString();
+        projectName = jsonObject.get(projectNameID).toString();
 
 
     }

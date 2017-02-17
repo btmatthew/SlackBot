@@ -1,6 +1,7 @@
 import com.sun.net.httpserver.HttpServer;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,7 +12,7 @@ import java.net.InetSocketAddress;
  */
 public class SlackDirectConnection
 {
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, ParseException {
         Keys keys = new Keys();
         SlackSession session = SlackSessionFactory.createWebSocketSlackSession(keys.getSlackKey());
         session.connect();

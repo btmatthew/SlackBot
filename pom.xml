@@ -28,6 +28,11 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.Ullink</groupId>
             <artifactId>simple-slack-api</artifactId>
             <version>0.6.0</version>
@@ -36,11 +41,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20160810</version>
         </dependency>
     </dependencies>
     

@@ -4,6 +4,7 @@ import com.ullink.slack.simpleslackapi.SlackChannel;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,7 +22,12 @@ public class HTTPServer implements HttpHandler {
      * @throws IOException
      */
     public void handle(HttpExchange t) throws IOException {
-        Keys keys = new Keys();
+        Keys keys = null;
+        try {
+            keys = new Keys();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         System.out.println("Creating admin Session");
         SlackSession session = SlackSessionFactory.createWebSocketSlackSession(keys.getSlackAdminKey());
         session.connect();
@@ -31,7 +37,8 @@ public class HTTPServer implements HttpHandler {
         OutputStream os = t.getResponseBody();
         os.write(response.getBytes());
         os.close();
-        DatabaseManager db = new DatabaseManager();
+        DatabaseManager db = null;
+        db = new DatabaseManager();
         if(response.contains("group")){
             addUsersToGroup(session, db );
         }else if(response.contains("invite")){

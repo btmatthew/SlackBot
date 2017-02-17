@@ -6,6 +6,7 @@ import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
 import com.ullink.slack.simpleslackapi.listeners.PresenceChangeListener;
 import com.ullink.slack.simpleslackapi.listeners.SlackChannelJoinedListener;
 import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
+import org.json.simple.parser.ParseException;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -61,7 +62,8 @@ public class ListeningToMessageEvents {
                     }
                     slackMessage.setReplaces(replaces);
 
-                    DatabaseManager databaseManager = new DatabaseManager();
+                    DatabaseManager databaseManager = null;
+                    databaseManager = new DatabaseManager();
                     databaseManager.saveMessageInDatabase(slackMessage);
                 }
 

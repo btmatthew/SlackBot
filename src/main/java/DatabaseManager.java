@@ -1,3 +1,5 @@
+import org.json.simple.parser.ParseException;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,8 +16,12 @@ public class DatabaseManager{
     private final String USER;
     private final String PASS;
 
-    public DatabaseManager() {
-        keys = new Keys();
+    public DatabaseManager()  {
+        try {
+            keys = new Keys();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         getConnection();
         this.DB_URL = keys.getDatabaseURL();
         this.USER = keys.getDatabaseUser();
